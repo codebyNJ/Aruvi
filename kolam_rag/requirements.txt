@@ -1,0 +1,32 @@
+# Core ML and AI libraries
+torch
+numpy
+sentence-transformers
+faiss-cpu
+
+# FastAPI and WebSocket dependencies
+fastapi
+uvicorn[standard]
+websockets
+pydantic
+
+# Document processing and web scraping
+trafilatura
+requests
+beautifulsoup4
+
+# Text processing and chunking
+langchain
+langchain-community
+
+# Utilities
+pathlib2
+python-dateutil
+
+# Optional: GPU support (uncomment if you have CUDA)
+# faiss-gpu
+# torch-audio
+
+# Development and testing
+pytest
+jupyter
