@@ -214,9 +214,24 @@ class SmartKolamRAG:
         logger.info("📚 Loading Kolam documentation...")
 
         urls = [
-            "https://www.sahapedia.org/significance-of-kolam-tamil-culture",
-            "https://kolampodu.com/blogs/news"
-        ]
+        "https://www.sahapedia.org/significance-of-kolam-tamil-culture",
+        "https://kolampodu.com/blogs/news",
+        "https://en.wikipedia.org/wiki/Kolam",
+        "https://www.india.com/lifestyle/kolam-designs-rangoli-patterns-for-pongal-2023-photos-and-videos-5555517/",
+        "https://www.thehindu.com/life-and-style/homes-and-gardens/the-art-of-kolam/article66235734.ece",
+        "https://www.firstpost.com/living/pongal-2023-kolam-designs-rangoli-patterns-and-their-meaning-11141291.html",
+        "https://www.deccanherald.com/lifestyle/kolam-the-traditional-tamil-art-form-that-is-a-part-of-pongal-celebrations-1168764.html",
+        "https://www.newindianexpress.com/lifestyle/2023/jan/13/kolam-the-traditional-tamil-art-form-that-is-a-part-of-pongal-celebrations-2542615.html",
+        "https://direct.mit.edu/desi/article-pdf/38/3/34/2032937/desi_a_00690.pdf",
+        "https://timwaring.info/wp-content/uploads/2012/03/waring-forma-lexicon-preprint.pdf",
+        "https://journals.openedition.org/anthrovision/pdf/607",
+        "https://arxiv.org/abs/2304.14134",
+        "https://arxiv.org/abs/1503.02130",
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC8584996/",
+        "https://indiaich-sna.in/sites/default/files/2024-02/16478855876442.pdf",
+        "https://www.arcjournals.org/pdfs/ijhsse/v5-i5/8.pdf"
+    ]
+
 
         all_documents = []
 
@@ -615,6 +630,238 @@ class SmartKolamRAG:
             'cache_entries': len(self.query_cache),
             'sample_document': self.documents[0][:200] + "..." if self.documents else None
         }
+
+# FastAPI Web Interface
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
+import asyncio
+import json
+
+# Initialize FastAPI app
+app = FastAPI(
+    title="Smart Kolam RAG System",
+    description="Interactive chat system for Kolam cultural knowledge",
+    version="1.0.0"
+)
+
+# Global RAG instance
+kolam_rag_instance = None
+
+class QueryRequest(BaseModel):
+    question: str
+    include_metadata: bool = False
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize the RAG system on startup"""
+    global kolam_rag_instance
+    try:
+        logger.info("🚀 Initializing Smart Kolam RAG System...")
+        kolam_rag_instance = SmartKolamRAG(
+            chunk_size=400,
+            chunk_overlap=100,
+            top_k_retrieval=3,
+            similarity_threshold=0.1
+        )
+        logger.info("📚 Loading Kolam documentation...")
+        kolam_rag_instance.load_kolam_documentation()
+        logger.info("✅ Smart Kolam RAG System ready!")
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize RAG system: {e}")
+        raise
+
+@app.get("/", response_class=HTMLResponse)
+async def get_chat_interface():
+    """Serve the chat interface"""
+    html_content = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Smart Kolam RAG Chat</title>
+        <meta charset="utf-8">
+        <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+            .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .header { text-align: center; margin-bottom: 30px; }
+            .header h1 { color: #d32f2f; margin: 0; }
+            .header p { color: #666; margin: 5px 0 0 0; }
+            .chat-container { height: 400px; border: 1px solid #ddd; border-radius: 5px; overflow-y: auto; padding: 15px; margin-bottom: 20px; background: #fafafa; }
+            .message { margin-bottom: 15px; padding: 10px; border-radius: 8px; }
+            .user-message { background: #e3f2fd; text-align: right; }
+            .bot-message { background: #f3e5f5; }
+            .input-container { display: flex; gap: 10px; }
+            .input-container input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+            .input-container button { padding: 10px 20px; background: #d32f2f; color: white; border: none; border-radius: 5px; cursor: pointer; }
+            .input-container button:hover { background: #b71c1c; }
+            .status { text-align: center; color: #666; font-size: 14px; margin-bottom: 10px; }
+            .examples { margin-top: 20px; }
+            .examples h3 { color: #d32f2f; }
+            .example-btn { display: inline-block; margin: 5px; padding: 5px 10px; background: #fff3e0; border: 1px solid #ff9800; border-radius: 15px; cursor: pointer; font-size: 12px; }
+            .example-btn:hover { background: #ffe0b2; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🎨 Smart Kolam RAG Chat</h1>
+                <p>Ask questions about Kolam - Tamil traditional floor art</p>
+            </div>
+            
+            <div class="status" id="status">Connecting...</div>
+            <div class="chat-container" id="chatContainer"></div>
+            
+            <div class="input-container">
+                <input type="text" id="messageInput" placeholder="Ask about Kolam patterns, history, techniques..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+            
+            <div class="examples">
+                <h3>Try these questions:</h3>
+                <span class="example-btn" onclick="setQuestion('What is Kolam?')">What is Kolam?</span>
+                <span class="example-btn" onclick="setQuestion('How to draw Kolam patterns?')">How to draw Kolam?</span>
+                <span class="example-btn" onclick="setQuestion('Benefits of drawing Kolam')">Benefits of Kolam</span>
+                <span class="example-btn" onclick="setQuestion('Types of Kolam patterns')">Types of patterns</span>
+                <span class="example-btn" onclick="setQuestion('Kolam in Tamil culture')">Cultural significance</span>
+            </div>
+        </div>
+
+        <script>
+            let ws = null;
+            
+            function connect() {
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
+                
+                ws.onopen = function() {
+                    document.getElementById('status').textContent = '✅ Connected - Ready to chat!';
+                    document.getElementById('status').style.color = 'green';
+                };
+                
+                ws.onmessage = function(event) {
+                    const data = JSON.parse(event.data);
+                    addMessage(data.answer, 'bot-message');
+                };
+                
+                ws.onclose = function() {
+                    document.getElementById('status').textContent = '❌ Disconnected - Reconnecting...';
+                    document.getElementById('status').style.color = 'red';
+                    setTimeout(connect, 3000);
+                };
+                
+                ws.onerror = function() {
+                    document.getElementById('status').textContent = '❌ Connection error';
+                    document.getElementById('status').style.color = 'red';
+                };
+            }
+            
+            function addMessage(text, className) {
+                const chatContainer = document.getElementById('chatContainer');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${className}`;
+                messageDiv.textContent = text;
+                chatContainer.appendChild(messageDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            function sendMessage() {
+                const input = document.getElementById('messageInput');
+                const message = input.value.trim();
+                if (message && ws && ws.readyState === WebSocket.OPEN) {
+                    addMessage(message, 'user-message');
+                    ws.send(JSON.stringify({question: message}));
+                    input.value = '';
+                }
+            }
+            
+            function setQuestion(question) {
+                document.getElementById('messageInput').value = question;
+            }
+            
+            function handleKeyPress(event) {
+                if (event.key === 'Enter') {
+                    sendMessage();
+                }
+            }
+            
+            // Connect on page load
+            connect();
+        </script>
+    </body>
+    </html>
+    """
+    return HTMLResponse(content=html_content)
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    """WebSocket endpoint for real-time chat"""
+    await websocket.accept()
+    logger.info("🔌 WebSocket connection established")
+    
+    try:
+        while True:
+            # Receive message
+            data = await websocket.receive_text()
+            message_data = json.loads(data)
+            question = message_data.get("question", "")
+            
+            if not question:
+                await websocket.send_text(json.dumps({
+                    "answer": "Please ask a question about Kolam."
+                }))
+                continue
+            
+            logger.info(f"💬 Received question: {question}")
+            
+            # Process with RAG system
+            if kolam_rag_instance:
+                result = kolam_rag_instance.smart_query(question, include_metadata=False)
+                response = {
+                    "answer": result.get("answer", "I couldn't process your question."),
+                    "confidence": result.get("confidence", 0.0)
+                }
+            else:
+                response = {
+                    "answer": "RAG system is not initialized. Please try again later.",
+                    "confidence": 0.0
+                }
+            
+            await websocket.send_text(json.dumps(response))
+            
+    except WebSocketDisconnect:
+        logger.info("🔌 WebSocket connection closed")
+    except Exception as e:
+        logger.error(f"❌ WebSocket error: {e}")
+
+@app.post("/api/query")
+async def api_query(request: QueryRequest):
+    """REST API endpoint for queries"""
+    if not kolam_rag_instance:
+        raise HTTPException(status_code=503, detail="RAG system not initialized")
+    
+    result = kolam_rag_instance.smart_query(
+        request.question, 
+        include_metadata=request.include_metadata
+    )
+    return result
+
+@app.get("/api/stats")
+async def get_stats():
+    """Get system statistics"""
+    if not kolam_rag_instance:
+        raise HTTPException(status_code=503, detail="RAG system not initialized")
+    
+    return kolam_rag_instance.get_kolam_statistics()
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {
+        "status": "healthy",
+        "service": "smart-kolam-rag",
+        "rag_initialized": kolam_rag_instance is not None
+    }
 
 def main():
     """Fixed demonstration of Smart Kolam RAG System"""
