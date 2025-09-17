@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Download, Loader2 } from 'lucide-react';
 
+type GeneratorMode = 'kolam' | 'mandala';
 type KolamType = 'traditional' | 'geometric' | 'iyal' | 'rangoli' | 'kavi';
 type BrushType = 'round' | 'flat' | 'calligraphy' | 'dot';
 type BackgroundType = 'white' | 'black' | 'sand' | 'red' | 'custom';
@@ -27,9 +28,28 @@ const BRUSH_TYPES: BrushType[] = ['round'];
 const BACKGROUNDS: BackgroundType[] = ['white', 'black', 'sand', 'red', 'custom'];
 const COLOR_SCHEMES: ColorScheme[] = ['vibrant', 'pastel', 'monochrome', 'contrast', 'earthy'];
 
+const PATTERN_TYPES = [
+  { value: 'circles', label: 'Circles' },
+  { value: 'petals', label: 'Petals' },
+  { value: 'geometric', label: 'Geometric' },
+  { value: 'dots', label: 'Dots' },
+  { value: 'lines', label: 'Lines' },
+  { value: 'triangles', label: 'Triangles' },
+  { value: 'stars', label: 'Stars' },
+];
+
+const COLOR_SCHEMES_MANDALA = [
+  { value: 'rainbow', label: 'Rainbow' },
+  { value: 'warm', label: 'Warm' },
+  { value: 'cool', label: 'Cool' },
+  { value: 'monochrome', label: 'Monochrome' },
+  { value: 'earth', label: 'Earth Tones' },
+];
+
 const API_BASE_URL = 'https://aruvi.onrender.com';
 
 export default function KolamGenerator() {
+  const [mode, setMode] = useState<GeneratorMode>('kolam');
   // Common parameters
   const [type, setType] = useState<KolamType>('traditional');
   const [size, setSize] = useState(500);
@@ -46,9 +66,25 @@ export default function KolamGenerator() {
   const [lineThickness, setLineThickness] = useState(1.0);
   const [precision, setPrecision] = useState(0.8);
   
+  // Mandala specific state
+  const [layers, setLayers] = useState<number>(6);
+  const [symmetry, setSymmetry] = useState<number>(8);
+  const [patternTypes, setPatternTypes] = useState<string[]>(['circles', 'petals']);
+  const [usePreset, setUsePreset] = useState<boolean>(false);
+  const [preset, setPreset] = useState<string>('classic');
+  const [colorSchemeMandala, setColorSchemeMandala] = useState('rainbow');
+
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const generateArt = async () => {
+    if (mode === 'kolam') {
+      return generateKolam();
+    } else {
+      return generateMandala();
+    }
+  };
 
   const generateKolam = async () => {
     setIsGenerating(true);
@@ -114,12 +150,79 @@ export default function KolamGenerator() {
     }
   };
 
+  const generateMandala = async () => {
+    setIsGenerating(true);
+    setError(null);
+    
+    try {
+      const params = new URLSearchParams();
+      
+      if (usePreset) {
+        params.append('preset', preset);
+      } else {
+        params.append('size', size.toString());
+        params.append('layers', layers.toString());
+        params.append('symmetry', symmetry.toString());
+        params.append('pattern_types', patternTypes.join(','));
+        params.append('color_scheme', colorSchemeMandala);
+        params.append('complexity', complexity.toString());
+      }
+
+      const apiBaseUrl = 'https://aruvi-1.onrender.com';
+      const response = await fetch(`${apiBaseUrl}/api/mandala?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'text/plain',
+        },
+        mode: 'cors',
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to generate Mandala: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+
+      const hexString = await response.text();
+      
+      // Convert hex string to Uint8Array
+      const bytes = new Uint8Array(hexString.length / 2);
+      for (let i = 0; i < hexString.length; i += 2) {
+        bytes[i / 2] = parseInt(hexString.substring(i, i + 2), 16);
+      }
+      
+      // Convert to string
+      const decoder = new TextDecoder('utf-8');
+      const svgText = decoder.decode(bytes);
+      
+      // Create data URL with proper encoding for non-Latin1 characters
+      const svgBase64 = btoa(unescape(encodeURIComponent(svgText)));
+      setGeneratedImage(`data:image/svg+xml;base64,${svgBase64}`);
+      
+    } catch (err) {
+      console.error('Error generating Mandala:', err);
+      setError(err instanceof Error ? err.message : 'Failed to generate Mandala. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const downloadKolam = () => {
     if (!generatedImage) return;
     
     const link = document.createElement('a');
     link.href = generatedImage;
     link.download = `kolam-${type}-${Date.now()}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const downloadImage = () => {
+    if (!generatedImage) return;
+    
+    const link = document.createElement('a');
+    link.href = generatedImage;
+    link.download = `mandala-${Date.now()}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -275,96 +378,268 @@ export default function KolamGenerator() {
           <div className="lg:col-span-1">
             <Card className="sticky top-8">
               <CardHeader>
-                <CardTitle>Design Your Kolam</CardTitle>
-                <CardDescription>Customize the parameters to generate your perfect Kolam</CardDescription>
+                <div className="flex justify-between items-center">
+                  <CardTitle>
+                    {mode === 'kolam' ? 'Kolam Generator' : 'Mandala Generator'}
+                  </CardTitle>
+                  <div className="inline-flex rounded-md shadow-sm" role="group">
+                    <button
+                      type="button"
+                      onClick={() => setMode('kolam')}
+                      className={`px-4 py-2 text-sm font-medium rounded-l-lg ${
+                        mode === 'kolam'
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-white text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      Kolam Generator
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMode('mandala')}
+                      className={`px-4 py-2 text-sm font-medium rounded-r-lg ${
+                        mode === 'mandala'
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-white text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      Mandala Generator
+                    </button>
+                  </div>
+                </div>
+                <CardDescription>
+                  {mode === 'kolam' 
+                    ? 'Create beautiful Kolam designs' 
+                    : 'Generate intricate Mandala patterns'}
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="type">Kolam Type</Label>
-                  <Select value={type} onValueChange={(v: KolamType) => setType(v)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {KOLAM_TYPES.map((t) => (
-                        <SelectItem key={t.value} value={t.value}>
-                          {t.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                {mode === 'kolam' ? (
+                  // Existing Kolam controls
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="type">Kolam Type</Label>
+                      <Select value={type} onValueChange={(v: KolamType) => setType(v)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {KOLAM_TYPES.map((t) => (
+                            <SelectItem key={t.value} value={t.value}>
+                              {t.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                <div className="space-y-2">
-                  <Label>Size: {size}px</Label>
-                  <Slider
-                    min={100}
-                    max={1000}
-                    step={50}
-                    value={[size]}
-                    onValueChange={([value]) => setSize(value)}
-                  />
-                </div>
+                    <div className="space-y-2">
+                      <Label>Size: {size}px</Label>
+                      <Slider
+                        min={100}
+                        max={1000}
+                        step={50}
+                        value={[size]}
+                        onValueChange={([value]) => setSize(value)}
+                      />
+                    </div>
 
-                <div className="space-y-2">
-                  <Label>Background</Label>
-                  <Select value={background} onValueChange={(v: BackgroundType) => setBackground(v)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select background" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {BACKGROUNDS.map((bg) => (
-                        <SelectItem key={bg} value={bg}>
-                          {bg.charAt(0).toUpperCase() + bg.slice(1)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                    <div className="space-y-2">
+                      <Label>Background</Label>
+                      <Select value={background} onValueChange={(v: BackgroundType) => setBackground(v)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select background" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {BACKGROUNDS.map((bg) => (
+                            <SelectItem key={bg} value={bg}>
+                              {bg.charAt(0).toUpperCase() + bg.slice(1)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                <div className="space-y-2">
-                  <Label>Brush Type</Label>
-                  <Select value={brush} onValueChange={(v: BrushType) => setBrush(v)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select brush" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {BRUSH_TYPES.map((b) => (
-                        <SelectItem key={b} value={b}>
-                          {b.charAt(0).toUpperCase() + b.slice(1)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                    <div className="space-y-2">
+                      <Label>Brush Type</Label>
+                      <Select value={brush} onValueChange={(v: BrushType) => setBrush(v)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select brush" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {BRUSH_TYPES.map((b) => (
+                            <SelectItem key={b} value={b}>
+                              {b.charAt(0).toUpperCase() + b.slice(1)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                {/* Type-specific controls */}
-                <div className="space-y-4 pt-2 border-t border-gray-100">
-                  {renderTypeSpecificControls()}
-                </div>
+                    {/* Type-specific controls */}
+                    <div className="space-y-4 pt-2 border-t border-gray-100">
+                      {renderTypeSpecificControls()}
+                    </div>
 
+                    <Button 
+                      className="w-full mt-6" 
+                      size="lg"
+                      onClick={generateKolam}
+                      disabled={isGenerating}
+                    >
+                      {isGenerating ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        'Generate Kolam'
+                      )}
+                    </Button>
+
+                    {error && (
+                      <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
+                        {error}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  // Mandala controls
+                  <>
+                    <div className="flex items-center space-x-2">
+                      <input 
+                        type="checkbox" 
+                        id="use-preset" 
+                        checked={usePreset}
+                        onChange={(e) => setUsePreset(e.target.checked)}
+                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      />
+                      <Label htmlFor="use-preset">Use Preset</Label>
+                    </div>
+
+                    {usePreset ? (
+                      <div>
+                        <Label htmlFor="preset">Preset</Label>
+                        <Select 
+                          value={preset} 
+                          onValueChange={setPreset}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a preset" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {['classic', 'complex', 'simple', 'floral', 'geometric'].map((p) => (
+                              <SelectItem key={p} value={p}>
+                                {p.charAt(0).toUpperCase() + p.slice(1)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    ) : (
+                      <>
+                        <div>
+                          <Label htmlFor="size">Canvas Size: {size}px</Label>
+                          <Slider
+                            id="size"
+                            min={200}
+                            max={2000}
+                            step={100}
+                            value={[size]}
+                            onValueChange={([value]) => setSize(value)}
+                            className="mt-2"
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="layers">Layers: {layers}</Label>
+                          <Slider
+                            id="layers"
+                            min={1}
+                            max={15}
+                            value={[layers]}
+                            onValueChange={([value]) => setLayers(value)}
+                            className="mt-2"
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="symmetry">Symmetry: {symmetry}</Label>
+                          <Slider
+                            id="symmetry"
+                            min={3}
+                            max={24}
+                            value={[symmetry]}
+                            onValueChange={([value]) => setSymmetry(value)}
+                            className="mt-2"
+                          />
+                        </div>
+
+                        <div>
+                          <Label>Pattern Types</Label>
+                          <div className="mt-2 space-y-2">
+                            {PATTERN_TYPES.map((type) => (
+                              <div key={type.value} className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id={`pattern-${type.value}`}
+                                  checked={patternTypes.includes(type.value)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setPatternTypes([...patternTypes, type.value]);
+                                    } else {
+                                      setPatternTypes(patternTypes.filter(t => t !== type.value));
+                                    }
+                                  }}
+                                  className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                />
+                                <Label htmlFor={`pattern-${type.value}`}>
+                                  {type.label}
+                                </Label>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="color-scheme">Color Scheme</Label>
+                          <Select 
+                            value={colorSchemeMandala} 
+                            onValueChange={setColorSchemeMandala}
+                          >
+                            <SelectTrigger className="w-full mt-2">
+                              <SelectValue placeholder="Select a color scheme" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {COLOR_SCHEMES_MANDALA.map((scheme) => (
+                                <SelectItem key={scheme.value} value={scheme.value}>
+                                  {scheme.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </>
+                    )}
+                  </>
+                )}
+              </CardContent>
+              <CardFooter>
                 <Button 
-                  className="w-full mt-6" 
-                  size="lg"
-                  onClick={generateKolam}
+                  onClick={generateArt}
                   disabled={isGenerating}
+                  className="w-full"
                 >
                   {isGenerating ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Generating...
+                      {mode === 'kolam' ? 'Generating Kolam...' : 'Generating Mandala...'}
                     </>
                   ) : (
-                    'Generate Kolam'
+                    `Generate ${mode === 'kolam' ? 'Kolam' : 'Mandala'}`
                   )}
                 </Button>
-
-                {error && (
-                  <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
-                    {error}
-                  </div>
-                )}
-              </CardContent>
+              </CardFooter>
             </Card>
           </div>
 
@@ -372,33 +647,40 @@ export default function KolamGenerator() {
           <div className="lg:col-span-2">
             <Card className="h-full">
               <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle>Your Kolam</CardTitle>
-                  {generatedImage && (
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={downloadKolam}
-                      className="flex items-center gap-2"
-                    >
-                      <Download className="h-4 w-4" />
-                      Download
-                    </Button>
-                  )}
-                </div>
+                <CardTitle>Preview</CardTitle>
+                <CardDescription>
+                  {mode === 'kolam' 
+                    ? 'Your generated kolam will appear here' 
+                    : 'Your generated mandala will appear here'}
+                </CardDescription>
               </CardHeader>
-              <CardContent className="flex items-center justify-center p-8 min-h-[500px] bg-gray-50">
-                {generatedImage ? (
-                  <div className="relative w-full h-full flex items-center justify-center">
-                    <img 
-                      src={generatedImage} 
-                      alt="Generated Kolam" 
-                      className="max-w-full max-h-[600px] object-contain"
-                    />
+              <CardContent className="flex flex-col items-center justify-center p-6 min-h-[500px] bg-gray-50 rounded-lg">
+                {error ? (
+                  <div className="text-red-500 text-center">
+                    <p>Error generating {mode}:</p>
+                    <p className="text-sm mt-2">{error}</p>
+                  </div>
+                ) : generatedImage ? (
+                  <div className="relative w-full max-w-md">
+                    <div className="w-full bg-white p-4 rounded-lg shadow-lg flex items-center justify-center">
+                      <img 
+                        src={generatedImage} 
+                        alt={mode === 'kolam' ? 'Generated Kolam' : 'Generated Mandala'}
+                        className="max-w-full h-auto"
+                      />
+                    </div>
+                    <Button 
+                      onClick={mode === 'kolam' ? downloadKolam : downloadImage}
+                      className="mt-4 w-full"
+                      variant="outline"
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      {mode === 'kolam' ? 'Download Kolam' : 'Download Mandala'}
+                    </Button>
                   </div>
                 ) : (
-                  <div className="text-center text-gray-400">
-                    <p>Your generated Kolam will appear here</p>
+                  <div className="text-gray-400 text-center">
+                    <p>Click &quot;Generate {mode === 'kolam' ? 'Kolam' : 'Mandala'}&quot; to create your design</p>
                   </div>
                 )}
               </CardContent>

@@ -24,22 +24,17 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    return {
-        "message": "Mandala Art Generator API v1.0",
-        "description": "Generate beautiful mandala patterns with mathematical precision",
-        "endpoints": {
-            "generate": "/api/mandala - Generate custom mandala patterns",
-            "preset": "/api/mandala/preset - Generate preset mandala patterns",
-            "docs": "/docs - Interactive API documentation"
-        },
-        "features": [
-            "Customizable layers and symmetry",
-            "Multiple pattern types (circles, petals, geometric, etc.)",
-            "Various color schemes",
-            "SVG vector output",
-            "Preset configurations"
-        ]
-    }
+    """Return a simple SVG welcome message."""
+    svg_content = """<svg width="800" height="100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#f5f5f5"/>
+        <text x="50%" y="50%" font-family="Arial" font-size="24" text-anchor="middle" dominant-baseline="middle" fill="#333">
+            Mandala Art Generator API - Use /api/mandala to generate mandalas
+        </text>
+    </svg>"""
+    return Response(
+        content=svg_content,
+        media_type="image/svg+xml"
+    )
 
 @app.get("/api/mandala", 
          summary="Generate Custom Mandala",
@@ -137,10 +132,10 @@ async def generate_preset_mandala(
 
 @app.get("/api/mandala/info",
          summary="Get Mandala Generation Info",
-         description="Get information about available options")
+         description="Get information about available options as SVG")
 async def get_mandala_info():
-    """Get information about available mandala generation options."""
-    return {
+    """Get information about available mandala generation options as SVG."""
+    info = {
         "pattern_types": {
             "circles": "Circular patterns with varying sizes",
             "petals": "Petal-like elliptical shapes",
@@ -157,27 +152,58 @@ async def get_mandala_info():
             "monochrome": "Single color variations",
             "earth": "Natural earth tone colors"
         },
-        "presets": {
-            "classic": "Traditional mandala with 6 layers, 8-fold symmetry",
-            "complex": "Intricate design with 10 layers, 12-fold symmetry",
-            "simple": "Minimalist design with 4 layers, 6-fold symmetry",
-            "floral": "Flower-inspired patterns with petal emphasis",
-            "geometric": "Mathematical geometric patterns"
-        },
-        "parameters": {
-            "size": "Canvas size in pixels (200-2000)",
-            "layers": "Number of concentric layers (1-15)",
-            "symmetry": "Rotational symmetry count (3-24)",
-            "complexity": "Pattern detail level (0.1-1.0)"
-        }
+        "presets": ["classic", "complex", "simple", "floral", "geometric"]
     }
+    
+    # Convert info to SVG
+    svg_content = [
+        '<svg width="800" height="800" xmlns="http://www.w3.org/2000/svg">',
+        '<rect width="100%" height="100%" fill="#f8f9fa"/>',
+        '<text x="20" y="40" font-family="Arial" font-size="24" font-weight="bold" fill="#333">Mandala Generator Options</text>',
+        '<text x="20" y="80" font-family="Arial" font-size="18" font-weight="bold" fill="#2c3e50">Pattern Types:</text>'
+    ]
+    
+    # Add pattern types
+    y = 110
+    for pattern, desc in info["pattern_types"].items():
+        svg_content.append(f'<text x="40" y="{y}" font-family="Arial" font-size="14" fill="#2c3e50"><tspan font-weight="bold">{pattern}:</tspan> {desc}</text>')
+        y += 25
+    
+    # Add color schemes
+    y += 20
+    svg_content.append(f'<text x="20" y="{y}" font-family="Arial" font-size="18" font-weight="bold" fill="#2c3e50">Color Schemes:</text>')
+    y += 30
+    for scheme, desc in info["color_schemes"].items():
+        svg_content.append(f'<text x="40" y="{y}" font-family="Arial" font-size="14" fill="#2c3e50"><tspan font-weight="bold">{scheme}:</tspan> {desc}</text>')
+        y += 25
+    
+    # Add presets
+    y += 20
+    svg_content.append(f'<text x="20" y="{y}" font-family="Arial" font-size="18" font-weight="bold" fill="#2c3e50">Available Presets:</text>')
+    y += 30
+    for preset in info["presets"]:
+        svg_content.append(f'<text x="40" y="{y}" font-family="Arial" font-size="14" fill="#2c3e50">• {preset}</text>')
+        y += 25
+    
+    svg_content.append('</svg>')
+    
+    return Response(
+        content='\n'.join(svg_content),
+        media_type="image/svg+xml"
+    )
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint."""
-    return {"status": "healthy", "service": "mandala-generator"}
-
-
+    """Health check endpoint that returns SVG."""
+    svg_content = """<svg width="400" height="100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#e8f5e9"/>
+        <circle cx="50" cy="50" r="20" fill="#4caf50"/>
+        <text x="90" y="55" font-family="Arial" font-size="24" fill="#2e7d32">Service is healthy</text>
+    </svg>"""
+    return Response(
+        content=svg_content,
+        media_type="image/svg+xml"
+    )
 
 app.add_middleware(
     CORSMiddleware,
