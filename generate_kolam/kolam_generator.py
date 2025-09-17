@@ -1,7 +1,7 @@
 import random
 from typing import List, Dict, Any
 from datetime import datetime
-from models import KolamPattern, KolamGrid, GridCell, Dot, Line, Point, CurvePoint
+from models import KolamPattern, KolamGrid, GridCell, Dot, Line, Point, CurvePoint, KolamType
 from kolam_patterns import KOLAM_CURVE_PATTERNS
 
 class KolamGenerator:
@@ -91,7 +91,6 @@ class KolamGenerator:
             pt_rt_value = cls.pt_rt[Mat[hp + 1][j - 1] - 1]
             valid_by_lt = cls.mate_pt_rt[pt_rt_value + 1]
             
-            valids = cls.intersect(valid_by_up, valid_by_lt)
             valids = cls.intersect(valids, cls.find_self_inverse(cls.v_inv))
             
             try:
@@ -197,7 +196,7 @@ class KolamGenerator:
         return M
     
     @classmethod
-    def draw_kolam(cls, M: List[List[int]]) -> KolamPattern:
+    def draw_kolam(cls, M: List[List[int]], kolam_type: KolamType) -> KolamPattern:
         """Convert matrix to visual kolam pattern"""
         m, n = len(M), len(M[0])
         
@@ -227,12 +226,19 @@ class KolamGenerator:
                     if 0 <= pattern_index < len(KOLAM_CURVE_PATTERNS):
                         pattern = KOLAM_CURVE_PATTERNS[pattern_index]
                         
+                        # Calculate the base position for this pattern
+                        base_x = (j + 0.5) * cls.CELL_SPACING
+                        base_y = (i + 0.5) * cls.CELL_SPACING
+                        
+                        # Scale factor to fit pattern within cell
+                        scale = cls.CELL_SPACING * 0.4  # Slightly smaller than cell to prevent overlap
+                        
                         curve_points = [
                             CurvePoint(
-                                x=((j + 1) + point.x) * cls.CELL_SPACING,
-                                y=((i + 1) + point.y) * cls.CELL_SPACING,
-                                control_x=((j + 1) + point.control_x) * cls.CELL_SPACING if point.control_x else None,
-                                control_y=((i + 1) + point.control_y) * cls.CELL_SPACING if point.control_y else None
+                                x=base_x + point.x * scale,
+                                y=base_y + point.y * scale,
+                                control_x=base_x + point.control_x * scale if point.control_x else None,
+                                control_y=base_y + point.control_y * scale if point.control_y else None
                             )
                             for point in pattern.points
                         ]
@@ -242,7 +248,7 @@ class KolamGenerator:
                             start=curve_points[0],
                             end=curve_points[-1],
                             curve_points=curve_points,
-                            stroke_width=1.5,
+                            stroke_width=2.0,  # Slightly thicker for better visibility
                             color="#ffffff"
                         ))
         
@@ -271,6 +277,7 @@ class KolamGenerator:
         return KolamPattern(
             id=f"kolam-{m}x{n}",
             name=f"Kolam {m}×{n}",
+            kolam_type=kolam_type,  
             grid=grid,
             curves=curves,
             dots=dots,
@@ -280,7 +287,8 @@ class KolamGenerator:
                 "height": (m + 1) * cls.CELL_SPACING
             },
             created=datetime.now(),
-            modified=datetime.now()
+            modified=datetime.now(),
+            colors={"primary": "#ffffff"}  
         )
     
     @classmethod
@@ -291,7 +299,7 @@ class KolamGenerator:
         matrix = cls.propose_kolam_1d(size)
         print(f"📊 Generated matrix: {len(matrix)}x{len(matrix[0])}")
         
-        pattern = cls.draw_kolam(matrix)
+        pattern = cls.draw_kolam(matrix, KolamType.TRADITIONAL_1D)
         print(f"✅ Created kolam with {len(pattern.dots)} dots and {len(pattern.curves)} curves")
         
         return pattern

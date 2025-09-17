@@ -569,14 +569,34 @@ class AdvancedKolamGenerator:
         **kwargs
     ) -> KolamPattern:
         """Main entry point for generating any type of kolam"""
-        
         if kolam_type == KolamType.GEOMETRIC:
-            return cls.generate_geometric_kolam(size, **kwargs)
-        elif kolam_type == KolamType.IYAL:
-            return cls.generate_iyal_kolam(size, **kwargs)
+            return cls.generate_geometric_kolam(
+                size=size,
+                shape=kwargs.get('shape', 'circle'),
+                complexity=kwargs.get('complexity', 3),
+                colors={"primary": kwargs.get('brush', '#ffffff')}
+            )
         elif kolam_type == KolamType.RANGOLI:
-            return cls.generate_rangoli_kolam(size, **kwargs)
+            return cls.generate_rangoli_kolam(
+                size=size,
+                motif_type=kwargs.get('motif_type', 'lotus'),
+                color_scheme=kwargs.get('color_scheme', 'traditional'),
+                complexity=kwargs.get('complexity', 3),
+                colors={"primary": kwargs.get('brush', '#ffffff')}
+            )
+        elif kolam_type == KolamType.IYAL:
+            return cls.generate_iyal_kolam(
+                size=size,
+                flow_intensity=kwargs.get('flow_intensity', 0.5),
+                organic_factor=kwargs.get('organic_factor', 0.3),
+                colors={"primary": kwargs.get('brush', '#ffffff')}
+            )
         elif kolam_type == KolamType.KAVI:
-            return cls.generate_kavi_kolam(size, **kwargs)
+            return cls.generate_kavi_kolam(
+                size=size,
+                line_thickness=kwargs.get('line_thickness', 2.0),
+                precision=kwargs.get('precision', 0.8),
+                colors={"primary": kwargs.get('brush', '#ffffff')}
+            )
         else:
             raise ValueError(f"Unsupported kolam type: {kolam_type}")

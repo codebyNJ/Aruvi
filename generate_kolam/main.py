@@ -43,7 +43,12 @@ async def generate_kolam(
     size: int = Query(7, ge=3, le=15, description="Grid size for the kolam pattern (3-15)"),
     background: str = Query("#7b3306", description="Background color in hex format"),
     brush: str = Query("#ffffff", description="Pattern color in hex format"),
-    **kwargs
+    # Geometric parameters
+    shape: str = Query(None, description="Shape for geometric kolam (circle, square, triangle)"),
+    complexity: int = Query(3, ge=1, le=5, description="Complexity level (1-5)"),
+    # Rangoli parameters
+    motif_type: str = Query(None, description="Motif type for rangoli (lotus, mandala)"),
+    color_scheme: str = Query(None, description="Color scheme for rangoli (traditional, modern)")
 ):
     """
     Generate any type of kolam pattern as a static SVG image with customizable colors.
@@ -52,6 +57,10 @@ async def generate_kolam(
     - **size**: Grid size for the kolam pattern (creates an n×n grid, range: 3-15)
     - **background**: Background color of the SVG (hex color code)
     - **brush**: Color of the kolam lines and dots (hex color code)
+    - **shape**: Shape for geometric kolam (circle, square, triangle)
+    - **complexity**: Complexity level (1-5)
+    - **motif_type**: Motif type for rangoli (lotus, mandala)
+    - **color_scheme**: Color scheme for rangoli (traditional, modern)
     
     Returns an SVG image with Content-Type: image/svg+xml
     """
@@ -65,11 +74,28 @@ async def generate_kolam(
                 detail=f"Invalid kolam type. Supported types: {[t.value for t in KolamType]}"
             )
         
-        # Generate the kolam pattern
+        # Prepare parameters based on kolam type
+        params = {
+            'brush': brush,
+            'background': background
+        }
+        
         if kolam_type_enum == KolamType.TRADITIONAL_1D:
             pattern = KolamGenerator.generate_kolam_1d(size)
         else:
-            pattern = AdvancedKolamGenerator.generate_kolam(kolam_type_enum, size, **kwargs)
+            # Add type-specific parameters
+            if kolam_type_enum == KolamType.GEOMETRIC:
+                if shape:
+                    params['shape'] = shape
+                params['complexity'] = complexity
+            elif kolam_type_enum == KolamType.RANGOLI:
+                if motif_type:
+                    params['motif_type'] = motif_type
+                if color_scheme:
+                    params['color_scheme'] = color_scheme
+                params['complexity'] = complexity
+            
+            pattern = AdvancedKolamGenerator.generate_kolam(kolam_type_enum, size, **params)
         
         # Generate SVG using the utility function
         from models import SVGOptions

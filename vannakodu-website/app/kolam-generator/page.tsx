@@ -21,9 +21,9 @@ const KOLAM_TYPES = [
   { value: 'kavi', label: 'Kavi' },
 ];
 
-const SHAPES = ['circle', 'square', 'triangle', 'star', 'lotus', 'peacock'];
-const MOTIF_TYPES = ['floral', 'animal', 'divine', 'abstract', 'festive'];
-const BRUSH_TYPES: BrushType[] = ['round', 'flat', 'calligraphy', 'dot'];
+const SHAPES = ['circle', 'square'];
+const MOTIF_TYPES = [''];
+const BRUSH_TYPES: BrushType[] = ['round'];
 const BACKGROUNDS: BackgroundType[] = ['white', 'black', 'sand', 'red', 'custom'];
 const COLOR_SCHEMES: ColorScheme[] = ['vibrant', 'pastel', 'monochrome', 'contrast', 'earthy'];
 
@@ -55,58 +55,57 @@ export default function KolamGenerator() {
     setError(null);
     
     try {
-      let endpoint = `${API_BASE_URL}/api/kolam`;
-      
-      // Create base params
+      // Prepare parameters
       const params = new URLSearchParams({
-        size: size.toString(),
-        background,
-        brush
+        type: type, // 'traditional' or other types
+        size: type === 'traditional' 
+          ? Math.min(Math.max(Math.floor(size / 100), 3), 15).toString()
+          : Math.min(Math.max(size / 100, 3), 15).toString(),
+        background: background === 'white' ? '#ffffff' : 
+                   background === 'black' ? '#000000' :
+                   background === 'sand' ? '#f5e7d8' :
+                   background === 'red' ? '#7b3306' : '#ffffff',
+        brush: brush === 'round' ? '#ffffff' :
+               brush === 'flat' ? '#f8f1f1' :
+               brush === 'calligraphy' ? '#e8e8e8' : '#f0f0f0'
       });
-      
-      // Add type-specific parameters
-      switch (type) {
-        case 'geometric':
-          endpoint += '/geometric';
-          params.append('shape', shape);
-          params.append('complexity', complexity.toString());
-          break;
-        case 'iyal':
-          endpoint += '/iyal';
-          params.append('flow_intensity', flowIntensity.toString());
-          params.append('organic_factor', organicFactor.toString());
-          break;
-        case 'rangoli':
-          endpoint += '/rangoli';
-          params.append('motif_type', motifType);
-          params.append('color_scheme', colorScheme);
-          params.append('complexity', complexity.toString());
-          break;
-        case 'kavi':
-          endpoint += '/kavi';
-          params.append('line_thickness', lineThickness.toString());
-          params.append('precision', precision.toString());
-          break;
-        // 'traditional' uses the base endpoint with just size, background, brush
+  
+      // Add type-specific parameters for non-traditional kolams
+      if (type !== 'traditional') {
+        switch (type) {
+          case 'geometric':
+            params.append('shape', shape);
+            params.append('complexity', Math.min(Math.max(complexity, 1), 5).toString());
+            break;
+          case 'iyal':
+            params.append('flow_intensity', Math.min(Math.max(flowIntensity, 0.1), 1).toFixed(1));
+            params.append('organic_factor', Math.min(Math.max(organicFactor, 0), 1).toFixed(1));
+            break;
+          case 'rangoli':
+            params.append('motif_type', motifType);
+            params.append('color_scheme', colorScheme);
+            params.append('complexity', Math.min(Math.max(complexity, 1), 5).toString());
+            break;
+          case 'kavi':
+            params.append('line_thickness', Math.min(Math.max(lineThickness, 0.5), 5).toFixed(1));
+            params.append('precision', Math.min(Math.max(precision, 0.1), 1).toFixed(1));
+            break;
+        }
       }
-
-      // Construct URL with query parameters
-      const url = `${endpoint}?${params.toString()}`;
-      
-      const response = await fetch(url, {
-        method: 'GET', 
-        headers: {
-          'Accept': 'application/json',
-        },
-      });
-
+  
+      // Call our API route
+      const response = await fetch(`/api/kolam?${params.toString()}`);
+  
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || 'Failed to generate Kolam');
+        const errorText = await response.text();
+        throw new Error(`Failed to generate Kolam: ${response.status} ${response.statusText} - ${errorText}`);
       }
-
-      const data = await response.json();
-      setGeneratedImage(data.imageUrl || data.url);
+  
+      // Get the SVG as text and convert to data URL
+      const svgText = await response.text();
+      const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
+      const svgUrl = URL.createObjectURL(svgBlob);
+      setGeneratedImage(svgUrl);
     } catch (err) {
       console.error('Error generating Kolam:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate Kolam. Please try again.');
