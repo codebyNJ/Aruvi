@@ -197,8 +197,7 @@ sessions/
 # Dataset files (usually large)
 *.csv
 *.tsv
-*.json
-*.xml
+
 *.parquet
 
 # Trained models and weights
@@ -231,9 +230,7 @@ uploads/
 *.mkv
 
 # Large image datasets
-dataset/
-data/images/
-data/videos/
+
 
 # OpenCV cache
 .opencv_cache/

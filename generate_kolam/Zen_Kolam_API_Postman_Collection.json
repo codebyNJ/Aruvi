@@ -1,0 +1,678 @@
+{
+  "info": {
+    "name": "Zen Kolam API v2.0",
+    "description": "Comprehensive API for generating various types of South Indian kolam patterns with mathematical precision",
+    "version": "2.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "General Kolam Generation",
+      "item": [
+        {
+          "name": "Generate Any Kolam Type",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/kolam?kolam_type=geometric&size=7&background=%237b3306&brush=%23ffffff",
+              "host": ["{{base_url}}"],
+              "path": ["api", "kolam"],
+              "query": [
+                {
+                  "key": "kolam_type",
+                  "value": "geometric",
+                  "description": "Type of kolam: geometric, iyal, rangoli, kavi, traditional_1d"
+                },
+                {
+                  "key": "size",
+                  "value": "7",
+                  "description": "Grid size (3-15)"
+                },
+                {
+                  "key": "background",
+                  "value": "#7b3306",
+                  "description": "Background color in hex format"
+                },
+                {
+                  "key": "brush",
+                  "value": "#ffffff",
+                  "description": "Pattern color in hex format"
+                }
+              ]
+            },
+            "description": "Generate any type of kolam pattern with customizable parameters"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Geometric Kolam",
+      "item": [
+        {
+          "name": "Geometric Circle Kolam",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/kolam/geometric?size=7&shape=circle&complexity=3&background=%237b3306&brush=%23ffffff",
+              "host": ["{{base_url}}"],
+              "path": ["api", "kolam", "geometric"],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "7",
+                  "description": "Grid size (3-15)"
+                },
+                {
+                  "key": "shape",
+                  "value": "circle",
+                  "description": "Geometric shape: circle, square, triangle"
+                },
+                {
+                  "key": "complexity",
+                  "value": "3",
+                  "description": "Complexity level (1-5)"
+                },
+                {
+                  "key": "background",
+                  "value": "#7b3306",
+                  "description": "Background color"
+                },
+                {
+                  "key": "brush",
+                  "value": "#ffffff",
+                  "description": "Pattern color"
+                }
+              ]
+            },
+            "description": "Generate circular geometric kolam using mathematical formulas: x = r*cos(θ), y = r*sin(θ)"
+          }
+        },
+        {
+          "name": "Geometric Square Kolam",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/kolam/geometric?size=8&shape=square&complexity=4&background=%23000&brush=%23ff6b6b",
+              "host": ["{{base_url}}"],
+              "path": ["api", "kolam", "geometric"],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "8",
+                  "description": "Grid size"
+                },
+                {
+                  "key": "shape",
+                  "value": "square",
+                  "description": "Square geometric pattern"
+                },
+                {
+                  "key": "complexity",
+                  "value": "4",
+                  "description": "Higher complexity"
+                },
+                {
+                  "key": "background",
+                  "value": "#000",
+                  "description": "Black background"
+                },
+                {
+                  "key": "brush",
+                  "value": "#ff6b6b",
+                  "description": "Red pattern"
+                }
+              ]
+            },
+            "description": "Generate square geometric kolam with parametric equations"
+          }
+        },
+        {
+          "name": "Geometric Triangle Kolam",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/kolam/geometric?size=6&shape=triangle&complexity=2&background=%231a1a2e&brush=%23eee",
+              "host": ["{{base_url}}"],
+              "path": ["api", "kolam", "geometric"],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "6",
+                  "description": "Grid size"
+                },
+                {
+                  "key": "shape",
+                  "value": "triangle",
+                  "description": "Triangle geometric pattern"
+                },
+                {
+                  "key": "complexity",
+                  "value": "2",
+                  "description": "Medium complexity"
+                },
+                {
+                  "key": "background",
+                  "value": "#1a1a2e",
+                  "description": "Dark blue background"
+                },
+                {
+                  "key": "brush",
+                  "value": "#eee",
+                  "description": "Light gray pattern"
+                }
+              ]
+            },
+            "description": "Generate triangular geometric kolam with equilateral triangle mathematics"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Iyal Kolam (Freehand/Flowing)",
+      "item": [
+        {
+          "name": "Iyal Kolam - Gentle Flow",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/kolam/iyal?size=7&flow_intensity=0.3&organic_factor=0.2&background=%237b3306&brush=%23ffffff",
+              "host": ["{{base_url}}"],
+              "path": ["api", "kolam", "iyal"],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "7",
+                  "description": "Grid size"
+                },
+                {
+                  "key": "flow_intensity",
+                  "value": "0.3",
+                  "description": "Gentle flow (0.1-1.0)"
+                },
+                {
+                  "key": "organic_factor",
+                  "value": "0.2",
+                  "description": "Low organic variation (0.0-1.0)"
+                },
+                {
+                  "key": "background",
+                  "value": "#7b3306",
+                  "description": "Traditional background"
+                },
+                {
+                  "key": "brush",
+                  "value": "#ffffff",
+                  "description": "White pattern"
+                }
+              ]
+            },
+            "description": "Generate gentle flowing iyal kolam using spiral equations: r = a * θ^b"
+          }
+        },
+        {
+          "name": "Iyal Kolam - Dynamic Flow",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/kolam/iyal?size=9&flow_intensity=0.8&organic_factor=0.6&background=%23000&brush=%23ff9ff3",
+              "host": ["{{base_url}}"],
+              "path": ["api", "kolam", "iyal"],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "9",
+                  "description": "Larger grid"
+                },
+                {
+                  "key": "flow_intensity",
+                  "value": "0.8",
+                  "description": "High flow intensity"
+                },
+                {
+                  "key": "organic_factor",
+                  "value": "0.6",
+                  "description": "High organic variation"
+                },
+                {
+                  "key": "background",
+                  "value": "#000",
+                  "description": "Black background"
+                },
+                {
+                  "key": "brush",
+                  "value": "#ff9ff3",
+                  "description": "Pink pattern"
+                }
+              ]
+            },
+            "description": "Generate dynamic flowing iyal kolam with high organic variation"
+          }
+        },
+        {
+          "name": "Iyal Kolam - Wave Pattern",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/kolam/iyal?size=8&flow_intensity=0.7&organic_factor=0.4&background=%231a1a2e&brush=%2354a0ff",
+              "host": ["{{base_url}}"],
+              "path": ["api", "kolam", "iyal"],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "8",
+                  "description": "Grid size"
+                },
+                {
+                  "key": "flow_intensity",
+                  "value": "0.7",
+                  "description": "Medium-high flow"
+                },
+                {
+                  "key": "organic_factor",
+                  "value": "0.4",
+                  "description": "Medium organic variation"
+                },
+                {
+                  "key": "background",
+                  "value": "#1a1a2e",
+                  "description": "Dark background"
+                },
+                {
+                  "key": "brush",
+                  "value": "#54a0ff",
+                  "description": "Blue pattern"
+                }
+              ]
+            },
+            "description": "Generate wave-pattern iyal kolam with Bezier curves and organic variations"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rangoli Kolam (Colorful Traditional)",
+      "item": [
+        {
+          "name": "Rangoli Lotus Kolam",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/kolam/rangoli?size=7&motif_type=lotus&color_scheme=traditional&complexity=3&background=%237b3306&brush=%23ff6b6b",
+              "host": ["{{base_url}}"],
+              "path": ["api", "kolam", "rangoli"],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "7",
+                  "description": "Grid size"
+                },
+                {
+                  "key": "motif_type",
+                  "value": "lotus",
+                  "description": "Lotus motif pattern"
+                },
+                {
+                  "key": "color_scheme",
+                  "value": "traditional",
+                  "description": "Traditional color scheme"
+                },
+                {
+                  "key": "complexity",
+                  "value": "3",
+                  "description": "Complexity level"
+                },
+                {
+                  "key": "background",
+                  "value": "#7b3306",
+                  "description": "Traditional background"
+                },
+                {
+                  "key": "brush",
+                  "value": "#ff6b6b",
+                  "description": "Red pattern"
+                }
+              ]
+            },
+            "description": "Generate traditional lotus rangoli kolam using rose curves: r = a * cos(k * θ)"
+          }
+        },
+        {
+          "name": "Rangoli Mandala Kolam",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/kolam/rangoli?size=9&motif_type=mandala&color_scheme=modern&complexity=4&background=%23000&brush=%234ecdc4",
+              "host": ["{{base_url}}"],
+              "path": ["api", "kolam", "rangoli"],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "9",
+                  "description": "Larger grid"
+                },
+                {
+                  "key": "motif_type",
+                  "value": "mandala",
+                  "description": "Mandala pattern"
+                },
+                {
+                  "key": "color_scheme",
+                  "value": "modern",
+                  "description": "Modern color scheme"
+                },
+                {
+                  "key": "complexity",
+                  "value": "4",
+                  "description": "High complexity"
+                },
+                {
+                  "key": "background",
+                  "value": "#000",
+                  "description": "Black background"
+                },
+                {
+                  "key": "brush",
+                  "value": "#4ecdc4",
+                  "description": "Teal pattern"
+                }
+              ]
+            },
+            "description": "Generate mandala rangoli kolam with radial symmetry and Lissajous curves"
+          }
+        },
+        {
+          "name": "Rangoli Complex Lotus",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/kolam/rangoli?size=10&motif_type=lotus&color_scheme=traditional&complexity=5&background=%231a1a2e&brush=%23f9ca24",
+              "host": ["{{base_url}}"],
+              "path": ["api", "kolam", "rangoli"],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "Large grid"
+                },
+                {
+                  "key": "motif_type",
+                  "value": "lotus",
+                  "description": "Lotus motif"
+                },
+                {
+                  "key": "color_scheme",
+                  "value": "traditional",
+                  "description": "Traditional colors"
+                },
+                {
+                  "key": "complexity",
+                  "value": "5",
+                  "description": "Maximum complexity"
+                },
+                {
+                  "key": "background",
+                  "value": "#1a1a2e",
+                  "description": "Dark background"
+                },
+                {
+                  "key": "brush",
+                  "value": "#f9ca24",
+                  "description": "Yellow pattern"
+                }
+              ]
+            },
+            "description": "Generate complex lotus rangoli kolam with maximum detail"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Kavi Kolam (Chalk-based Bold)",
+      "item": [
+        {
+          "name": "Kavi Kolam - Standard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/kolam/kavi?size=7&line_thickness=2.0&precision=0.8&background=%237b3306&brush=%23ffffff",
+              "host": ["{{base_url}}"],
+              "path": ["api", "kolam", "kavi"],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "7",
+                  "description": "Grid size"
+                },
+                {
+                  "key": "line_thickness",
+                  "value": "2.0",
+                  "description": "Standard line thickness (0.5-5.0)"
+                },
+                {
+                  "key": "precision",
+                  "value": "0.8",
+                  "description": "High precision (0.1-1.0)"
+                },
+                {
+                  "key": "background",
+                  "value": "#7b3306",
+                  "description": "Traditional background"
+                },
+                {
+                  "key": "brush",
+                  "value": "#ffffff",
+                  "description": "White chalk pattern"
+                }
+              ]
+            },
+            "description": "Generate standard kavi kolam with bold lines and geometric precision"
+          }
+        },
+        {
+          "name": "Kavi Kolam - Bold Lines",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/kolam/kavi?size=8&line_thickness=4.0&precision=0.9&background=%23000&brush=%23ff6b6b",
+              "host": ["{{base_url}}"],
+              "path": ["api", "kolam", "kavi"],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "8",
+                  "description": "Grid size"
+                },
+                {
+                  "key": "line_thickness",
+                  "value": "4.0",
+                  "description": "Very bold lines"
+                },
+                {
+                  "key": "precision",
+                  "value": "0.9",
+                  "description": "Very high precision"
+                },
+                {
+                  "key": "background",
+                  "value": "#000",
+                  "description": "Black background"
+                },
+                {
+                  "key": "brush",
+                  "value": "#ff6b6b",
+                  "description": "Red pattern"
+                }
+              ]
+            },
+            "description": "Generate bold kavi kolam with thick lines and maximum precision"
+          }
+        },
+        {
+          "name": "Kavi Kolam - Fine Detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/kolam/kavi?size=9&line_thickness=1.0&precision=1.0&background=%231a1a2e&brush=%234ecdc4",
+              "host": ["{{base_url}}"],
+              "path": ["api", "kolam", "kavi"],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "9",
+                  "description": "Larger grid"
+                },
+                {
+                  "key": "line_thickness",
+                  "value": "1.0",
+                  "description": "Fine lines"
+                },
+                {
+                  "key": "precision",
+                  "value": "1.0",
+                  "description": "Maximum precision"
+                },
+                {
+                  "key": "background",
+                  "value": "#1a1a2e",
+                  "description": "Dark background"
+                },
+                {
+                  "key": "brush",
+                  "value": "#4ecdc4",
+                  "description": "Teal pattern"
+                }
+              ]
+            },
+            "description": "Generate fine-detail kavi kolam with thin lines and maximum precision"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Traditional 1D Kolam",
+      "item": [
+        {
+          "name": "Traditional 1D Kolam - Small",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/kolam?kolam_type=traditional_1d&size=5&background=%237b3306&brush=%23ffffff",
+              "host": ["{{base_url}}"],
+              "path": ["api", "kolam"],
+              "query": [
+                {
+                  "key": "kolam_type",
+                  "value": "traditional_1d",
+                  "description": "Traditional 1D symmetric pattern"
+                },
+                {
+                  "key": "size",
+                  "value": "5",
+                  "description": "Small grid"
+                },
+                {
+                  "key": "background",
+                  "value": "#7b3306",
+                  "description": "Traditional background"
+                },
+                {
+                  "key": "brush",
+                  "value": "#ffffff",
+                  "description": "White pattern"
+                }
+              ]
+            },
+            "description": "Generate small traditional 1D symmetric kolam using classic algorithms"
+          }
+        },
+        {
+          "name": "Traditional 1D Kolam - Large",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/kolam?kolam_type=traditional_1d&size=12&background=%23000&brush=%23ff6b6b",
+              "host": ["{{base_url}}"],
+              "path": ["api", "kolam"],
+              "query": [
+                {
+                  "key": "kolam_type",
+                  "value": "traditional_1d",
+                  "description": "Traditional 1D pattern"
+                },
+                {
+                  "key": "size",
+                  "value": "12",
+                  "description": "Large grid"
+                },
+                {
+                  "key": "background",
+                  "value": "#000",
+                  "description": "Black background"
+                },
+                {
+                  "key": "brush",
+                  "value": "#ff6b6b",
+                  "description": "Red pattern"
+                }
+              ]
+            },
+            "description": "Generate large traditional 1D symmetric kolam"
+          }
+        }
+      ]
+    },
+    {
+      "name": "API Information",
+      "item": [
+        {
+          "name": "Get API Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            },
+            "description": "Get API information and supported kolam types"
+          }
+        },
+        {
+          "name": "API Documentation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/docs",
+              "host": ["{{base_url}}"],
+              "path": ["docs"]
+            },
+            "description": "Access interactive API documentation"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "description": "Base URL for the Zen Kolam API"
+    }
+  ]
+}
