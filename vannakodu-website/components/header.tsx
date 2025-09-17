@@ -64,10 +64,10 @@ export function Header() {
               <Link href="/kolam-gpt" className="font-medium text-gray-600 hover:text-gray-900">
                 KolamGPT
               </Link>
-              <a href="#" className="font-medium text-gray-600 hover:text-gray-900">
-                KolamGenerator
-              </a>
-              <a href="#" className="font-medium text-gray-600 hover:text-gray-900">
+              <Link href="/kolam-generator" className="font-medium text-gray-600 hover:text-gray-900">
+                Kolam Generator
+              </Link>
+              <a href="/kolam-extract" className="font-medium text-gray-600 hover:text-gray-900">
                 KolamExtract
               </a>
             </nav>

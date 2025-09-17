@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import Response
 from typing import Optional, Dict, Any
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
 
 from kolam_generator import KolamGenerator
 from advanced_kolam_generator import AdvancedKolamGenerator
@@ -248,6 +249,16 @@ async def generate_kavi_kolam(
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to generate kavi kolam: {str(e)}")
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # For development, replace with your frontend URL in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

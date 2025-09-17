@@ -177,6 +177,17 @@ async def health_check():
     """Health check endpoint."""
     return {"status": "healthy", "service": "mandala-generator"}
 
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # For development, replace with your frontend URL in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 if __name__ == "__main__":
     print("🎨 Starting Mandala Art Generator API...")
     print("📍 Server will be available at: http://localhost:8001")
