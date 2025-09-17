@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'ThatThatNewPixel';
+  src: url('/fonts/thatthatnewpixelfamilytest-italicsquare.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @import "tailwindcss";
 @import "tw-animate-css";
 

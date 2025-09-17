@@ -4,6 +4,7 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import { AuthModal } from "./auth-modal"
+import Link from "next/link"
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -60,9 +61,9 @@ export function Header() {
 
             {/* Navigation */}
             <nav className="hidden md:flex items-center gap-6">
-              <a href="#" className="font-medium text-gray-600 hover:text-gray-900">
+              <Link href="/kolam-gpt" className="font-medium text-gray-600 hover:text-gray-900">
                 KolamGPT
-              </a>
+              </Link>
               <a href="#" className="font-medium text-gray-600 hover:text-gray-900">
                 KolamGenerator
               </a>
