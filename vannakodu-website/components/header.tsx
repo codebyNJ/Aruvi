@@ -12,11 +12,19 @@ export function Header() {
   const [modalMode, setModalMode] = useState<"login" | "signup">("login")
 
   useEffect(() => {
+    let ticking = false
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 30)
+          ticking = false
+        })
+        ticking = true
+      }
     }
 
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
@@ -28,24 +36,23 @@ export function Header() {
   return (
     <>
       <header
-        className={`w-full transition-all duration-300 ease-out ${
-          isScrolled
-            ? "fixed top-2 left-1/2 transform -translate-x-1/2 z-50 max-w-5xl bg-white/95 backdrop-blur-md rounded-full border border-gray-200 shadow-lg"
-            : "absolute top-0 left-0 z-40 bg-transparent mt-6 max-w-full"
-        }`}
+        className={`w-full fixed top-3 left-1/2 z-50 max-w-4xl bg-white/90 backdrop-blur-xl rounded-full border border-gray-200/50 shadow-xl shadow-black/5 transition-transform duration-500 ease-out will-change-transform`}
+        style={{
+          transform: `translateX(-50%) scale(${isScrolled ? 0.85 : 1})`
+        }}
       >
-        <div className={`mx-auto px-6 transition-all duration-300 ${isScrolled ? "py-2" : "py-4"}`}>
+        <div className="mx-auto px-6 py-3">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <Image 
                 src="/images/logo.png" 
                 alt="VannaKodu Logo" 
-                width={isScrolled ? 32 : 40} 
-                height={isScrolled ? 32 : 40} 
-                className={`transition-all duration-300 ${isScrolled ? "w-8 h-8" : "w-10 h-10"}`} 
+                width={40} 
+                height={40} 
+                className="w-10 h-10" 
               />
-              <span className={`transition-all duration-300 ${isScrolled ? "text-xl" : "text-2xl"} ${isScrolled ? "text-gray-800" : "text-[#1B596F]"}`}>
+              <span className="text-xl text-gray-800">
                 <span className="font-sans font-medium">Vanna</span>
                 <span className="font-serif font-normal italic">Kodu</span>
               </span>
@@ -53,38 +60,23 @@ export function Header() {
 
             {/* Navigation */}
             <nav className="hidden md:flex items-center gap-6">
-              <a
-                href="#"
-                className={`font-medium transition-all duration-300 ${isScrolled ? "text-sm" : "text-base"} ${
-                  isScrolled ? "text-gray-600 hover:text-gray-900" : "text-[#1B596F] hover:text-[#164d5f]"
-                }`}
-              >
+              <a href="#" className="font-medium text-gray-600 hover:text-gray-900">
                 KolamGPT
               </a>
-              <a
-                href="#"
-                className={`font-medium transition-all duration-300 ${isScrolled ? "text-sm" : "text-base"} ${
-                  isScrolled ? "text-gray-600 hover:text-gray-900" : "text-[#1B596F] hover:text-[#164d5f]"
-                }`}
-              >
+              <a href="#" className="font-medium text-gray-600 hover:text-gray-900">
                 KolamGenerator
               </a>
-              <a
-                href="#"
-                className={`font-medium transition-all duration-300 ${isScrolled ? "text-sm" : "text-base"} ${
-                  isScrolled ? "text-gray-600 hover:text-gray-900" : "text-[#1B596F] hover:text-[#164d5f]"
-                }`}
-              >
+              <a href="#" className="font-medium text-gray-600 hover:text-gray-900">
                 KolamExtract
               </a>
             </nav>
 
             <div className="flex items-center">
-              <div className={`flex bg-white rounded-full border border-gray-200 relative overflow-hidden transition-all duration-300 ${isScrolled ? "p-0.5 scale-90" : "p-1"}`}>
-                {/* Background slider for smooth transition */}
+              <div className="flex bg-white rounded-full border border-gray-200 relative overflow-hidden p-1">
+                {/* Background slider */}
                 <div
-                  className={`absolute bg-[#1B596F] rounded-full transition-all duration-300 ease-out ${isScrolled ? "top-0.5 bottom-0.5" : "top-1 bottom-1"} ${
-                    activeTab === "login" ? "left-0.5 right-[50%]" : "left-[50%] right-0.5"
+                  className={`absolute bg-[#1B596F] rounded-full transition-all duration-300 ease-out top-1 bottom-1 ${
+                    activeTab === "login" ? "left-1 right-[50%]" : "left-[50%] right-1"
                   }`}
                 />
 
@@ -94,7 +86,7 @@ export function Header() {
                     setActiveTab("login")
                     handleAuthClick("login")
                   }}
-                  className={`font-serif relative z-10 rounded-full border-0 transition-all duration-300 ease-out ${isScrolled ? "px-4 py-1.5 text-sm" : "px-6 py-2"} ${
+                  className={`font-serif relative z-10 rounded-full border-0 px-6 py-2 transition-colors duration-300 ${
                     activeTab === "login" ? "text-white" : "text-[#1B596F] hover:text-[#164d5f]"
                   }`}
                 >
@@ -106,7 +98,7 @@ export function Header() {
                     setActiveTab("signup")
                     handleAuthClick("signup")
                   }}
-                  className={`font-serif relative z-10 rounded-full border-0 transition-all duration-300 ease-out ${isScrolled ? "px-4 py-1.5 text-sm" : "px-6 py-2"} ${
+                  className={`font-serif relative z-10 rounded-full border-0 px-6 py-2 transition-colors duration-300 ${
                     activeTab === "signup" ? "text-white" : "text-[#1B596F] hover:text-[#164d5f]"
                   }`}
                 >

@@ -1,13 +1,13 @@
 # FastAPI and server dependencies
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-python-multipart==0.0.6
+fastapi
+uvicorn
+python-multipart
 
 # Core Python libraries (usually included but ensuring compatibility)
-typing-extensions>=4.0.0
+typing-extensions
 
 # For XML processing and SVG generation
-lxml>=4.9.0
+lxml
 
 # Optional: For enhanced development experience
-python-dotenv>=1.0.0
+python-dotenv
