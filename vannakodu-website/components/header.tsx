@@ -54,8 +54,7 @@ export function Header() {
                 className="w-10 h-10" 
               />
               <span className="text-xl text-gray-800">
-                <span className="font-sans font-medium">Vanna</span>
-                <span className="font-serif font-normal italic">Kodu</span>
+                <span className="font-sans font-medium">Aruvi</span>
               </span>
             </div>
 

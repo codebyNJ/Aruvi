@@ -10,34 +10,24 @@ interface FAQItem {
 
 const faqData: FAQItem[] = [
   {
-    question: "What is VannaKodu and how does it work?",
+    question: "What is Aruvi and how does it work?",
     answer:
-      "VannaKodu is an AI-powered platform that helps you create, learn about, and share traditional kolam patterns. Our advanced algorithms understand the sacred geometry and cultural significance behind these ancient art forms, enabling both beginners and experts to explore infinite creative possibilities while maintaining cultural authenticity.",
+      "Aruvi is India's 1st Kolam-based digital platform — a one-stop solution for creating, studying, and preserving Kolams.",
   },
   {
-    question: "Do I need artistic experience to use VannaKodu?",
+    question: "Do I need artistic experience to use Aruvi?",
     answer:
-      "Not at all! VannaKodu is designed for everyone, from complete beginners to experienced artists. Our intuitive tools guide you through the process, teaching you about traditional patterns while helping you create beautiful kolams. The AI assistance makes it easy to understand the underlying principles and create authentic designs.",
+      "Not at all! Aruvi is designed for everyone, from complete beginners to experienced artists. Our intuitive tools guide you through the process, teaching you about traditional patterns while helping you create beautiful kolams. The AI assistance makes it easy to understand the underlying principles and create authentic designs.",
   },
   {
-    question: "How does the AI ensure cultural authenticity?",
+    question: "Is Aruvi suitable for educational purposes?",
     answer:
-      "Our AI has been trained on thousands of traditional kolam patterns, understanding the mathematical principles, symbolic meanings, and cultural contexts. It respects traditional rules while offering creative variations, ensuring that generated patterns maintain their cultural integrity and spiritual significance.",
-  },
-  {
-    question: "Can I share my creations with others?",
-    answer:
-      "VannaKodu includes a vibrant community platform where you can share your creations, learn from others, and connect with fellow kolam enthusiasts worldwide. You can also export your designs for printing or digital use, making it easy to bring your digital creations into the physical world.",
-  },
-  {
-    question: "Is VannaKodu suitable for educational purposes?",
-    answer:
-      "Yes! VannaKodu is an excellent educational tool for schools, cultural centers, and anyone interested in learning about South Indian traditions. It provides historical context, explains symbolic meanings, and offers interactive lessons that make learning about kolam art engaging and accessible.",
+      "Yes! Aruvi is an excellent educational tool for schools, cultural centers, and anyone interested in learning about South Indian traditions. It provides historical context, explains symbolic meanings, and offers interactive lessons that make learning about kolam art engaging and accessible.",
   },
   {
     question: "What tools are included in the platform?",
     answer:
-      "VannaKodu offers three main tools: KolamGPT for AI-powered pattern generation and cultural insights, KolamGenerator for creating custom designs with guided assistance, and KolamExtract for analyzing and understanding existing patterns. Each tool is designed to enhance your creative journey while preserving cultural authenticity.",
+      "Aruvi provides tools to: Explore the beauty of Kolam with KolamGPT for cultural insights, Kolam Generator to design stunning patterns, and Kolam Extract to digitize and reuse traditional art. Together, they bring heritage and creativity into your hands.",
   },
 ]
 

@@ -41,11 +41,8 @@ export function Footer() {
             }`}
           >
             <div className="flex items-center mb-4 sm:mb-6">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg flex items-center justify-center mr-3 sm:mr-4">
-                <div className="w-4 h-4 sm:w-5 sm:h-5 bg-[#1B596F] rounded-sm"></div>
-              </div>
               <h3 className="text-2xl sm:text-3xl font-bold font-sans">
-                <span className="font-inter">Vanna</span>Kodu
+                <span className="font-inter">Aru</span>vi
               </h3>
             </div>
             <p className="text-gray-300 leading-relaxed mb-6 sm:mb-8 text-sm sm:text-base max-w-md">
@@ -93,7 +90,7 @@ export function Footer() {
             <ul className="space-y-2 sm:space-y-3">
               <li>
                 <a
-                  href="#"
+                  href="/kolam-gpt"
                   className="text-gray-300 hover:text-white transition-colors duration-300 text-sm sm:text-base hover:translate-x-1 transform inline-block"
                 >
                   KolamGPT
@@ -101,7 +98,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="/kolam-generator"
                   className="text-gray-300 hover:text-white transition-colors duration-300 text-sm sm:text-base hover:translate-x-1 transform inline-block"
                 >
                   KolamGenerator
@@ -109,81 +106,17 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="/kolam-extract"
                   className="text-gray-300 hover:text-white transition-colors duration-300 text-sm sm:text-base hover:translate-x-1 transform inline-block"
                 >
                   KolamExtract
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-white transition-colors duration-300 text-sm sm:text-base hover:translate-x-1 transform inline-block"
-                >
-                  Community
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-white transition-colors duration-300 text-sm sm:text-base hover:translate-x-1 transform inline-block"
-                >
-                  Gallery
                 </a>
               </li>
             </ul>
           </div>
 
           {/* Support */}
-          <div
-            className={`transition-all duration-1200 delay-700 ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"
-            }`}
-          >
-            <h4 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-white">Support</h4>
-            <ul className="space-y-2 sm:space-y-3">
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-white transition-colors duration-300 text-sm sm:text-base hover:translate-x-1 transform inline-block"
-                >
-                  Help Center
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-white transition-colors duration-300 text-sm sm:text-base hover:translate-x-1 transform inline-block"
-                >
-                  Tutorials
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-white transition-colors duration-300 text-sm sm:text-base hover:translate-x-1 transform inline-block"
-                >
-                  Contact Us
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-white transition-colors duration-300 text-sm sm:text-base hover:translate-x-1 transform inline-block"
-                >
-                  Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-white transition-colors duration-300 text-sm sm:text-base hover:translate-x-1 transform inline-block"
-                >
-                  Terms of Service
-                </a>
-              </li>
-            </ul>
-          </div>
+          
         </div>
 
         {/* Bottom Section */}
@@ -193,7 +126,7 @@ export function Footer() {
           }`}
         >
           <p className="text-gray-400 text-xs sm:text-sm mb-4 sm:mb-0 text-center sm:text-left">
-            © 2024 VannaKodu. All rights reserved. Preserving culture through innovation.
+            © 2024 Aruvi. All rights reserved. Preserving culture through innovation.
           </p>
           <div className="flex items-center space-x-4 sm:space-x-6">
             <span className="text-gray-400 text-xs sm:text-sm">Made with</span>

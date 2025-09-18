@@ -73,7 +73,7 @@ export function AnimatedSections() {
               isVisible.section1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             }`}
           >
-            Through VannaKodu, we ensure these timeless art forms continue to flourish in the digital age.
+            Through Aruvi, we ensure these timeless art forms continue to flourish in the digital age.
           </p>
         </div>
       </section>
@@ -109,7 +109,7 @@ export function AnimatedSections() {
               }`}
             >
               <p className="text-4xl sm:text-6xl lg:text-8xl font-serif text-[#1B596F]/20 mb-2 sm:mb-4 transition-all duration-300 hover:text-[#1B596F]/40 hover:scale-110 cursor-default">
-                AI
+                Mathematics
               </p>
               <p className="text-sm sm:text-lg text-gray-600 leading-relaxed hover:text-gray-800 transition-colors duration-300 px-2 lg:px-0">
                 Empowering artists, preserving culture, and inspiring the next generation of traditional art enthusiasts
