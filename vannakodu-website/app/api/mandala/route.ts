@@ -1,3 +1,4 @@
+// pages/api/mandala/route.ts
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
@@ -24,6 +25,8 @@ export async function GET(request: Request) {
     // Add all query parameters to the URL
     apiUrl += `?${params.toString()}`;
     
+    console.log('Calling external API:', apiUrl);
+    
     const response = await fetch(apiUrl, {
       headers: {
         'Accept': 'image/svg+xml',
@@ -32,17 +35,34 @@ export async function GET(request: Request) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      return new NextResponse(errorText, {
-        status: response.status,
-        statusText: response.statusText,
-      });
+      console.error('External API error:', response.status, errorText);
+      return NextResponse.json(
+        { error: 'Failed to generate mandala', details: errorText },
+        { status: response.status }
+      );
     }
 
-    // Get the SVG content
-    const svg = await response.text();
+    // Get the response content - it should be SVG from the Python backend
+    const svgContent = await response.text();
+    
+    // Check if we have valid SVG content
+    if (!svgContent.trim().startsWith('<?xml') && !svgContent.trim().startsWith('<svg')) {
+      console.error('Response is not valid SVG:', svgContent.substring(0, 100));
+      return NextResponse.json(
+        { error: 'API returned non-SVG content', content: svgContent.substring(0, 200) },
+        { status: 500 }
+      );
+    }
+    
+    // Clean up the SVG content if it has XML declaration (which can cause issues)
+    let cleanSvgContent = svgContent;
+    if (svgContent.trim().startsWith('<?xml')) {
+      // Remove XML declaration to make it compatible with data URLs
+      cleanSvgContent = svgContent.replace(/<\?xml.*?\?>/, '').trim();
+    }
     
     // Return the SVG with proper headers
-    return new NextResponse(svg, {
+    return new NextResponse(cleanSvgContent, {
       status: 200,
       headers: {
         'Content-Type': 'image/svg+xml',
@@ -52,15 +72,12 @@ export async function GET(request: Request) {
     
   } catch (error) {
     console.error('Mandala API error:', error);
-    return new NextResponse(JSON.stringify({ 
-      error: 'Failed to generate mandala',
-      details: error instanceof Error ? error.message : 'Unknown error',
-      url: request.url // Use the request URL instead of undefined apiUrl
-    }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json',
+    return NextResponse.json(
+      { 
+        error: 'Failed to generate mandala',
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
-    });
+      { status: 500 }
+    );
   }
 }

@@ -184,6 +184,8 @@ sessions/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
+RAG-kolam/
+
 
 # Model files (large binary files)
 *.pkl

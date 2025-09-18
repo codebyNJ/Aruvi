@@ -3,6 +3,7 @@ torch
 numpy
 sentence-transformers
 faiss-cpu
+gradio
 
 # FastAPI and WebSocket dependencies
 fastapi

@@ -7,6 +7,7 @@ import os
 import sys
 import subprocess
 import logging
+import gradio as gr
 from pathlib import Path
 
 # Setup logging
@@ -25,7 +26,8 @@ def check_dependencies():
         'sentence_transformers': 'sentence_transformers',
         'faiss-cpu': 'faiss',  # faiss-cpu package imports as 'faiss'
         'trafilatura': 'trafilatura',
-        'langchain': 'langchain'
+        'langchain': 'langchain',
+        'gradio': 'gradio'
     }
     
     missing_packages = []
@@ -100,6 +102,43 @@ def start_server(host="0.0.0.0", port=8000, reload=True):
     
     return True
 
+def create_gradio_interface():
+    """Create a simple Gradio interface for the RAG system"""
+    
+    # This is a placeholder function - you'll need to integrate with your actual RAG system
+    def rag_chat(message, history):
+        # Simulate RAG response - replace this with actual RAG system integration
+        response = f"I received your message: '{message}'. This would be processed by the RAG system."
+        
+        # Add some simulated delay to make it feel more realistic
+        import time
+        time.sleep(0.5)
+        
+        return response
+    
+    # Create the Gradio interface
+    demo = gr.ChatInterface(
+        fn=rag_chat,
+        title="🤖 Smart Kolam RAG Chat",
+        description="Chat with the Smart Kolam Retrieval-Augmented Generation system",
+        examples=[
+            "What is kolam art?",
+            "Tell me about traditional South Indian art forms",
+            "How do I create a simple kolam design?"
+        ],
+        theme="soft"
+    )
+    
+    return demo
+
+def start_gradio_server(port=7860):
+    """Start the Gradio interface server"""
+    logger.info("🚀 Starting Gradio Interface...")
+    logger.info(f"🌐 Interface will be available at: http://0.0.0.0:{port}")
+    
+    demo = create_gradio_interface()
+    demo.launch(server_name="0.0.0.0", server_port=port, share=False)
+
 def main():
     """Main function with command line argument parsing"""
     import argparse
@@ -108,20 +147,28 @@ def main():
     parser.add_argument("--host", default="0.0.0.0", help="Host to bind to (default: 0.0.0.0)")
     parser.add_argument("--port", type=int, default=8000, help="Port to bind to (default: 8000)")
     parser.add_argument("--no-reload", action="store_true", help="Disable auto-reload")
+    parser.add_argument("--gradio", action="store_true", help="Start Gradio interface instead of WebSocket server")
+    parser.add_argument("--gradio-port", type=int, default=7860, help="Port for Gradio interface (default: 7860)")
     
     args = parser.parse_args()
     
     print("🎨 SMART KOLAM RAG WEBSOCKET SERVER")
     print("=" * 50)
     
-    success = start_server(
-        host=args.host,
-        port=args.port,
-        reload=not args.no_reload
-    )
-    
-    if not success:
-        sys.exit(1)
+    if args.gradio:
+        # Start Gradio interface
+        check_dependencies()
+        start_gradio_server(port=args.gradio_port)
+    else:
+        # Start WebSocket server
+        success = start_server(
+            host=args.host,
+            port=args.port,
+            reload=not args.no_reload
+        )
+        
+        if not success:
+            sys.exit(1)
 
 if __name__ == "__main__":
     main()

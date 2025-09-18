@@ -167,36 +167,55 @@ export default function KolamGenerator() {
         params.append('color_scheme', colorSchemeMandala);
         params.append('complexity', complexity.toString());
       }
-
+  
       const apiBaseUrl = 'https://aruvi-1.onrender.com';
       const response = await fetch(`${apiBaseUrl}/api/mandala?${params.toString()}`, {
         method: 'GET',
         headers: {
-          'Accept': 'text/plain',
+          'Accept': 'image/svg+xml',
         },
         mode: 'cors',
       });
-
+  
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Failed to generate Mandala: ${response.status} ${response.statusText} - ${errorText}`);
       }
-
-      const hexString = await response.text();
+  
+      // Get the response as text
+      const responseText = await response.text();
       
-      // Convert hex string to Uint8Array
-      const bytes = new Uint8Array(hexString.length / 2);
-      for (let i = 0; i < hexString.length; i += 2) {
-        bytes[i / 2] = parseInt(hexString.substring(i, i + 2), 16);
+      // Check if the response is already an SVG (starts with <svg)
+      if (responseText.trim().startsWith('<svg')) {
+        // It's already an SVG, use it directly
+        const svgBlob = new Blob([responseText], { type: 'image/svg+xml' });
+        const svgUrl = URL.createObjectURL(svgBlob);
+        setGeneratedImage(svgUrl);
+      } else {
+        // Try to decode as hex if it's not already SVG
+        try {
+          // Convert hex string to Uint8Array
+          const bytes = new Uint8Array(responseText.length / 2);
+          for (let i = 0; i < responseText.length; i += 2) {
+            bytes[i / 2] = parseInt(responseText.substring(i, i + 2), 16);
+          }
+          
+          // Convert to string
+          const decoder = new TextDecoder('utf-8');
+          const svgText = decoder.decode(bytes);
+          
+          // Create data URL
+          const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
+          const svgUrl = URL.createObjectURL(svgBlob);
+          setGeneratedImage(svgUrl);
+        } catch (hexError) {
+          console.error('Hex decoding failed:', hexError);
+          // If hex decoding fails, try to use the response as is
+          const svgBlob = new Blob([responseText], { type: 'image/svg+xml' });
+          const svgUrl = URL.createObjectURL(svgBlob);
+          setGeneratedImage(svgUrl);
+        }
       }
-      
-      // Convert to string
-      const decoder = new TextDecoder('utf-8');
-      const svgText = decoder.decode(bytes);
-      
-      // Create data URL with proper encoding for non-Latin1 characters
-      const svgBase64 = btoa(unescape(encodeURIComponent(svgText)));
-      setGeneratedImage(`data:image/svg+xml;base64,${svgBase64}`);
       
     } catch (err) {
       console.error('Error generating Mandala:', err);
@@ -218,15 +237,15 @@ export default function KolamGenerator() {
   };
 
   const downloadImage = () => {
-    if (!generatedImage) return;
-    
-    const link = document.createElement('a');
-    link.href = generatedImage;
-    link.download = `mandala-${Date.now()}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  if (!generatedImage) return;
+  
+  const link = document.createElement('a');
+  link.href = generatedImage;
+  link.download = `mandala-${Date.now()}.svg`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
   // Render parameter controls based on selected type
   const renderTypeSpecificControls = () => {
@@ -368,10 +387,7 @@ export default function KolamGenerator() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Kolam Generator</h1>
-          <p className="text-lg text-gray-600">Create beautiful Kolam designs with AI</p>
-        </div>
+        
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Controls */}
