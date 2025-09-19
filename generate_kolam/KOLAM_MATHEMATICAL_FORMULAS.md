@@ -1,4 +1,4 @@
-# Zen Kolam API - Mathematical Formulas & Implementation
+# Aruvi Kolam API - Mathematical Formulas & Implementation
 
 ## Overview
 
